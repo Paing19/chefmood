@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Find Ingredients | Chef Mood</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="language-selector.css">
+  <style>
+    .input-section {
+      padding: 0 20px;
+    }
+    
+    #findIngredientsBtn {
+      background-color: rgba(200, 200, 200, 0.5);
+      color: black;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    #findIngredientsBtn:hover {
+      background-color: black;
+      color: white;
+    }
+    
+    #findIngredientsBtn:active {
+      transform: scale(0.98);
+    }
+    
+    .input-section p {
+      text-align: left;
+      font-weight: 500;
+      margin-bottom: 10px;
+      color: #333;
+    }
+    
+    .recipe-details {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 20px;
+      margin: 10px auto;
+      max-width: 600px;
+      width: 90%;
+    }
+    
+    .recipe-details h2 {
+      margin: 0 0 15px 0;
+      font-size: 22px;
+      color: #333;
+    }
+    
+    .recipe-meta {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+      font-size: 13px;
+      color: #666;
+      flex-wrap: wrap;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .recipe-meta span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .recipe-details h3 {
+      font-size: 16px;
+      color: #333;
+      margin: 20px 0 10px 0;
+    }
+    
+    .recipe-details ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .recipe-details li {
+      padding: 8px 0;
+      border-bottom: 1px solid #f5f5f5;
+      font-size: 14px;
+      color: #555;
+    }
+    
+    .recipe-details li:last-child {
+      border-bottom: none;
+    }
+    
+    .instructions-text {
+      font-size: 14px;
+      line-height: 1.7;
+      color: #555;
+      background: #f9f9f9;
+      padding: 15px;
+      border-radius: 8px;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 40px 20px;
+      color: #666;
+      font-size: 16px;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #999;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+
+    <header>
+      <div class="account" onclick="location.href='index.html'">🏠︎</div>
+      <h1 data-translate="findByRecipes">Find by Recipes</h1>
+    </header>
+
+    <main>
+      <section class="input-section">
+
+        <p data-translate="enterRecipeName">Enter the name of a recipe:</p>
+        <input type="text" id="recipeNameInput" data-translate-placeholder="recipeNamePlaceholder" placeholder="e.g. Chocolate Cake">
+        <button id="findIngredientsBtn" data-translate="findIngredientsButton">Find Ingredients</button>
+      </section>
+
+      <div id="ingredientsList"></div>
+    </main>
+
+    <footer>
+      <p data-translate="discoverWhatYouNeed">Discover what you need</p>
+    </footer>
+
+  </div>
+
+<script>
+const findIngredientsBtn = document.getElementById("findIngredientsBtn");
+const recipeNameInput = document.getElementById("recipeNameInput");
+const ingredientsList = document.getElementById("ingredientsList");
+
+findIngredientsBtn.addEventListener("click", async () => {
+  const recipeName = recipeNameInput.value.trim();
+  
+  if (!recipeName) {
+    alert("Please enter a recipe name!");
+    return;
+  }
+  
+  ingredientsList.innerHTML = '<div class="loading" data-translate="findingIngredients">🔍 Finding ingredients...</div>';
+  
+  try {
+    const res = await fetch("http://localhost:3000/ingredients-from-recipe", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ recipeName })
+    });
+    
+    if (!res.ok) {
+      throw new Error(`Server error: ${res.status}`);
+    }
+    
+    const recipe = await res.json();
+    ingredientsList.innerHTML = "";
+
+    const div = document.createElement("div");
+    div.className = "recipe-details";
+    
+    div.innerHTML = `
+      <h2>${recipe.recipeName}</h2>
+      
+      <div class="recipe-meta">
+        <span>👥 ${recipe.servings} servings</span>
+        <span>⏱️ ${recipe.cookTime}</span>
+        <span>📊 ${recipe.difficulty}</span>
+      </div>
+      
+      <h3 data-translate="ingredients">📝 Ingredients:</h3>
+      <ul>
+        ${recipe.ingredients.map(ing => `<li>${ing.amount} ${ing.item}</li>`).join('')}
+      </ul>
+      
+      <h3 data-translate="instructions">👨‍🍳 Instructions:</h3>
+      <div class="instructions-text">${recipe.instructions}</div>
+    `;
+    
+    ingredientsList.appendChild(div);
+    
+  } catch (error) {
+    console.error("Error:", error);
+    ingredientsList.innerHTML = `
+      <div class="empty-state" style="color: #ff6b6b;">
+        ❌ Error: ${error.message}<br><br>
+        Make sure the server is running!
+      </div>
+    `;
+  }
+});
+
+console.log("Find ingredients page loaded!");
+</script>
+<script src="translations.js"></script>
+<script src="language-selector.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('[data-translate]').forEach(el => {
+    el.textContent = t(el.getAttribute('data-translate'));
+  });
+  document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
+    el.placeholder = t(el.getAttribute('data-translate-placeholder'));
+  });
+});
+</script>
+</body>
+</html>

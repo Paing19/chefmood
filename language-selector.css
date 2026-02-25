@@ -1,0 +1,96 @@
+/* language-selector.css - Styling for the language selector */
+
+.language-selector {
+  position: fixed;
+  top: 20px;
+  right: 80px;
+  z-index: 1000;
+}
+
+.language-btn {
+  background: white;
+  border: 2px solid #eee;
+  border-radius: 10px;
+  padding: 8px 15px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.language-btn:hover {
+  border-color: #ff8a65;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.language-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  min-width: 150px;
+  display: none;
+  overflow: hidden;
+}
+
+.language-dropdown.active {
+  display: block;
+  animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.language-option {
+  padding: 12px 15px;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-size: 14px;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.language-option:last-child {
+  border-bottom: none;
+}
+
+.language-option:hover {
+  background: #f9f9f9;
+}
+
+.language-option.active {
+  background: #fff3e0;
+  color: #ff8a65;
+  font-weight: 600;
+}
+
+.globe-icon {
+  font-size: 16px;
+}
+
+/* Mobile responsive */
+@media (max-width: 600px) {
+  .language-selector {
+    top: 10px;
+    right: 10px;
+  }
+  
+  .language-btn {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+}

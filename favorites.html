@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Favorites | Chef Mood</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="language-selector.css">
+  <style>
+    .favorites-list {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      padding: 10px;
+    }
+    
+    .recipe-card {
+      position: relative;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 20px;
+      margin: 0;
+      width: auto;
+    }
+    
+    .recipe-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      gap: 15px;
+    }
+    
+    .recipe-header h3 {
+      margin: 0;
+      font-size: 18px;
+      color: #333;
+      flex: 1;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      min-width: 0;
+    }
+    
+    .delete-btn {
+      background: #ff6b6b;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+    
+    .delete-btn:active {
+      background: #ff5252;
+      transform: scale(0.95);
+    }
+    
+    .recipe-meta {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 12px;
+      font-size: 13px;
+      color: #666;
+      flex-wrap: wrap;
+    }
+    
+    .recipe-meta span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .recipe-ingredients {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+    
+    .recipe-ingredients strong {
+      color: #333;
+    }
+    
+    details {
+      margin-top: 10px;
+      cursor: pointer;
+    }
+    
+    summary {
+      color: #77a875;
+      font-weight: 600;
+      padding: 8px 0;
+      list-style: none;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    summary::-webkit-details-marker {
+      display: none;
+    }
+    
+    summary::after {
+      content: " ▼";
+      font-size: 10px;
+    }
+    
+    details[open] summary::after {
+      content: " ▲";
+    }
+    
+    details p {
+      margin: 10px 0 0 0;
+      padding: 10px;
+      background: #f9f9f9;
+      border-radius: 8px;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #555;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #999;
+    }
+    
+    .empty-state h2 {
+      font-size: 48px;
+      margin: 0 0 10px 0;
+    }
+    
+    .empty-state p {
+      margin: 10px 0;
+      font-size: 16px;
+    }
+    
+    .empty-state a {
+      display: inline-block;
+      background: rgba(200, 200, 200, 0.5);
+      color: black;
+      padding: 12px 24px;
+      text-decoration: none;
+      border-radius: 10px;
+      margin-top: 20px;
+      font-weight: 600;
+      transition: background-color 0.3s;
+    }
+    
+    .empty-state a:hover {
+      background-color: black;
+      color: white;
+    }
+    
+    .clear-all-btn {
+      background: rgba(200, 200, 200, 0.5);
+      color: #333;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      margin: 10px auto 15px auto;
+      font-weight: 600;
+      font-size: 14px;
+      max-width: 300px;
+      width: 90%;
+    }
+    
+    .clear-all-btn:active {
+      background: rgba(180, 180, 180, 0.5);
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+
+    <header>
+      <div class="account" onclick="location.href='index.html'">🏠︎</div>
+      <h1 data-translate="favorites" data-translate="myFavorites">My Favorites ❤️</h1>
+    </header>
+
+    <main>
+      <div id="favoritesList"></div>
+    </main>
+
+    <footer>
+      <p data-translate="yourSavedRecipes">Your saved recipes</p>
+    </footer>
+
+  </div>
+
+<script>
+function getFavorites() {
+  const favs = localStorage.getItem('chefMoodFavorites');
+  return favs ? JSON.parse(favs) : [];
+}
+
+function saveFavorites(favorites) {
+  localStorage.setItem('chefMoodFavorites', JSON.stringify(favorites));
+}
+
+function deleteFavorite(recipeName) {
+  if (confirm(`Remove "${recipeName}" from favorites?`)) {
+    let favorites = getFavorites();
+    favorites = favorites.filter(fav => fav.name !== recipeName);
+    saveFavorites(favorites);
+    displayFavorites();
+  }
+}
+
+function clearAllFavorites() {
+  const count = getFavorites().length;
+  if (confirm(`Delete all ${count} favorite recipes?`)) {
+    localStorage.removeItem('chefMoodFavorites');
+    displayFavorites();
+  }
+}
+
+function displayFavorites() {
+  const favoritesList = document.getElementById('favoritesList');
+  const favorites = getFavorites();
+  
+  if (favorites.length === 0) {
+    favoritesList.innerHTML = `
+      <div class="empty-state">
+        <h2>...</h2>
+        <p data-translate="noFavoritesYet">No favorites yet!</p>
+        <p style="font-size: 14px; color: #aaa;" data-translate="saveRecipesYouLove">Save recipes you love</p>
+        <a href="ingredients.html" data-translate="findRecipesButton">Find Recipes</a>
+      </div>
+    `;
+    return;
+  }
+  
+  favoritesList.innerHTML = `
+    <button class="clear-all-btn" onclick="clearAllFavorites()" data-translate="clearAll">
+      🗑️ Clear All (${favorites.length})
+    </button>
+    <div class="favorites-list"></div>
+  `;
+  
+  const listContainer = favoritesList.querySelector('.favorites-list');
+  
+  favorites.forEach((recipe) => {
+    const div = document.createElement('div');
+    div.className = 'recipe-card';
+    
+    div.innerHTML = `
+      <div class="recipe-header">
+        <h3>${recipe.name}</h3>
+        <button class="delete-btn" onclick="deleteFavorite('${recipe.name.replace(/'/g, "\\'")}')" data-translate="remove">
+          Remove
+        </button>
+      </div>
+      
+      <div class="recipe-meta">
+        <span>⏱️ ${recipe.cookTime || 'N/A'}</span>
+        <span>📊 ${recipe.difficulty || 'N/A'}</span>
+        ${recipe.cuisine ? `<span>🌍 ${recipe.cuisine}</span>` : ''}
+      </div>
+      
+      <div class="recipe-ingredients">
+        <strong>Ingredients:</strong> ${recipe.ingredients.join(", ")}
+      </div>
+      
+      <details>
+        <summary data-translate="showInstructions">Show Instructions</summary>
+        <p>${recipe.instructions}</p>
+      </details>
+    `;
+    
+    listContainer.appendChild(div);
+  });
+}
+
+displayFavorites();
+
+console.log("Favorites page loaded!");
+</script>
+
+<script src="translations.js"></script>
+<script src="language-selector.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('[data-translate]').forEach(el => {
+    el.textContent = t(el.getAttribute('data-translate'));
+  });
+  document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
+    el.placeholder = t(el.getAttribute('data-translate-placeholder'));
+  });
+});
+</script>
+</body>
+</html>

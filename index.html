@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Home | Chef Mood</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="language-selector.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lobster&family=Zen+Kurenaido&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Small header -->
+
+    <div class="top-icons-below">
+       <div class="hamburger" id="hamburger">
+        &#9776; <!-- Hamburger icon -->
+       </div>
+    </div>
+
+      <!-- Full-screen vertical menu -->
+    <div class="side-menu" id="sideMenu">
+       <a href="profile.html" data-translate="profile">Profile</a>
+       <a href="settings.html" data-translate="settings">Settings</a>
+       <a href="login.html" data-translate="logout">Logout</a>
+    </div>
+
+
+
+    <main>
+
+      <!-- NEW moved logo -->
+      <h1 class="main-logo" data-translate="chefMood">Chef Mood</h1>
+
+      <div class="options">
+  <a href="explore.html" class="option-card" data-translate="explore"> Explore</a>
+  <a href="ingredients.html" class="option-card" data-translate="ingredients"> Ingredients</a>
+  <a href="recipes.html" class="option-card" data-translate="recipes"> Recipes</a>
+  <a href="favorites.html" class="option-card" data-translate="favorites"> Favorites</a>
+</div>
+
+    </main>
+
+    <footer>
+      <p data-translate="copyright">© 2025 Chef Mood</p>
+    </footer>
+
+  </div>
+  <script>
+ const hamburger = document.getElementById('hamburger');
+const sideMenu = document.getElementById('sideMenu');
+const overlay = document.getElementById('overlay');
+const appContainer = document.querySelector('.app-container');
+
+hamburger.addEventListener('click', (e) => {
+  sideMenu.classList.toggle('active');
+  overlay.classList.toggle('active'); // Toggle overlay
+  e.stopPropagation();
+});
+
+// Close menu when clicking outside
+appContainer.addEventListener('click', (e) => {
+  if (sideMenu.classList.contains('active') && 
+      !sideMenu.contains(e.target) &&
+      !hamburger.contains(e.target)) {
+    sideMenu.classList.remove('active');
+    overlay.classList.remove('active'); // Remove overlay
+  }
+});
+
+// Optional: Close menu if overlay itself is clicked
+overlay.addEventListener('click', () => {
+  sideMenu.classList.remove('active');
+  overlay.classList.remove('active');
+});
+
+
+</script>
+
+<script src="translations.js"></script>
+<script src="language-selector.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('[data-translate]').forEach(el => {
+    el.textContent = t(el.getAttribute('data-translate'));
+  });
+  document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
+    el.placeholder = t(el.getAttribute('data-translate-placeholder'));
+  });
+});
+</script>
+</body>
+</html>

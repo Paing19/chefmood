@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login | Chef Mood</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="language-selector.css">
+    
+    <style>
+        /* CSS to make the error message red and prominent */
+        .error-message {
+            color: red;
+            font-weight: bold;
+            text-align: left; 
+            margin-top: 5px;
+            margin-bottom: 10px;
+            min-height: 20px; /* Reserve space for the message */
+            visibility: hidden; /* Use visibility instead of display */
+        }
+        .error-message.show {
+            visibility: visible; /* Make visible when needed */
+        }
+        .success-message {
+            color: green;
+            font-weight: bold;
+            text-align: left; 
+            margin-top: 5px;
+            margin-bottom: 10px;
+            min-height: 20px; /* Reserve space for the message */
+            visibility: hidden; /* Use visibility instead of display */
+        }
+        .success-message.show {
+            visibility: visible; /* Make visible when needed */
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <main>
+            <div class="photo-decor">
+              <img src="photo/dashimaki.jpg" alt="photo1" class="top-img img1">
+              <img src="photo/fc.jpg" alt="photo2" class="top-img img2">
+              <img src="photo/haru.jpg" alt="photo3" class="top-img img3">
+              <img src="photo/rb.jpg" alt="photo4" class="bottom-img">
+            </div>
+            
+            <div class="login-container">
+                <form action="http://localhost:8080/chefmood/LoginServlet" method="post">
+                    <h1 data-translate="loginTitle">CHEF MOOD</h1>
+                    <label data-translate="emailOrUsername">Email or Username</label>
+                    <input type="text" name="username" data-translate-placeholder="username" placeholder="Username" required>
+                    
+                    <label data-translate="password">Password</label>
+                    <input type="password" name="password" placeholder="******" required>
+                    
+                    <div id="server-error" class="error-message"></div>
+                    <div id="server-success" class="success-message"></div>
+                    
+                    <p><a href="register.html" data-translate="createAccount">Create an account</a></p>
+                    <a href="forgot-password.html" class="forgot" data-translate="forgotPassword">Forgot password?</a>
+                    
+                    <button type="submit" data-translate="loginButton">Login</button>
+                </form>
+            </div>
+        </main>
+
+        <script>
+            // Function to extract a query parameter from the URL
+            function getQueryParameter(name) {
+                const urlParams = new URLSearchParams(window.location.search);
+                return urlParams.get(name);
+            }
+
+            const errorDisplayElement = document.getElementById('server-error');
+            const successDisplayElement = document.getElementById('server-success');
+
+            // Check for the 'error' parameter sent by the Servlet
+            const errorMessage = getQueryParameter('error');
+            if (errorMessage) {
+                errorDisplayElement.textContent = errorMessage;
+                errorDisplayElement.classList.add('show');
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+            
+            // Check for the 'success' parameter (e.g., from registration)
+            const successMessage = getQueryParameter('success');
+            if (successMessage) {
+                successDisplayElement.textContent = successMessage;
+                successDisplayElement.classList.add('show');
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        </script>
+        <script src="translations.js"></script>
+<script src="language-selector.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('[data-translate]').forEach(el => {
+    el.textContent = t(el.getAttribute('data-translate'));
+  });
+  document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
+    el.placeholder = t(el.getAttribute('data-translate-placeholder'));
+  });
+});
+</script>
+    </div>
+</body>
+</html>

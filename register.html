@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Register | Chef Mood</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="language-selector.css">
+    
+    <style>
+        /* CSS to make the error/success message prominent */
+        .error-message {
+            color: red;
+            font-weight: bold;
+            text-align: left; 
+            margin-top: 5px;
+            margin-bottom: 10px; 
+            display: none;
+        }
+        .success-message {
+            color: green;
+            font-weight: bold;
+            text-align: left; 
+            margin-top: 5px;
+            margin-bottom: 10px; 
+            display: none;
+        }
+        
+        .optional-label {
+            color: #888;
+            font-size: 0.9em;
+            font-weight: normal;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <header>
+      <div class="back-button" onclick="location.href='login.html'">←</div>
+      <h2 data-translate="registerTitle">Register</h2>
+    </header>
+
+    <main>
+        <form action="http://localhost:8080/chefmood/RegisterServlet" method="post" class="login-container">
+
+            <label data-translate="username">Username</label>
+            <input type="text" name="username" required>
+
+            <label data-translate="password">Password</label>
+            <input type="password" name="password" required>
+
+            <label data-translate="phoneNumber">Phone Number <span class="optional-label" data-translate="phoneOptional">(optional)</span></label>
+            <input type="tel" name="phone" data-translate-placeholder="phoneNumberPlaceholder" placeholder="Enter your phone number" pattern="[0-9+\-\s()]*">
+
+            <div id="server-error" class="error-message"></div>
+            <div id="server-success" class="success-message"></div>
+
+            <button type="submit" data-translate="createAccount">Create Account</button>
+
+        </form>
+    </main>
+</div>
+
+<script>
+    // Function to extract a query parameter from the URL
+    function getQueryParameter(name) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(name);
+    }
+
+    const errorDisplayElement = document.getElementById('server-error');
+    const successDisplayElement = document.getElementById('server-success');
+
+    // Check for the 'error' parameter
+    const errorMessage = getQueryParameter('error');
+    if (errorMessage) {
+        errorDisplayElement.textContent = errorMessage;
+        errorDisplayElement.style.display = 'block';
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    // Check for the 'success' parameter
+    const successMessage = getQueryParameter('success');
+    if (successMessage) {
+        successDisplayElement.textContent = successMessage;
+        successDisplayElement.style.display = 'block';
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+</script>
+<script src="translations.js"></script>
+<script src="language-selector.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('[data-translate]').forEach(el => {
+    el.textContent = t(el.getAttribute('data-translate'));
+  });
+  document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
+    el.placeholder = t(el.getAttribute('data-translate-placeholder'));
+  });
+});
+</script>
+</body>
+</html>
